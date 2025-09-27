@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    session_duration: int
+
     mongo_host: str
     mongo_port: int
     mongo_user: str | None = None
@@ -14,8 +16,8 @@ class Settings(BaseSettings):
     admin_username: str
     admin_password: str
 
-    gpt_api_url: str
     gpt_api_token: str
+    gpt_model: str
     gpt_prompt: str
 
     class Config:

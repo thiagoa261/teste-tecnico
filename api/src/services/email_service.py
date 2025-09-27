@@ -2,25 +2,36 @@ import httpx
 from src.core.config import settings
 from src.db.mongo import db
 from src.models.email_model import Email
+from openai import OpenAI
+import json
+from fastapi import HTTPException, status
 
 async def process_email(content: str):
-    # Chamada ao GPT para classificar
-    headers = {"Authorization": f"Bearer {settings.gpt_api_token}"}
-    payload = {
-        "model": "gpt-3.5-turbo",
-        "messages": [
-            {"role": "system", "content": settings.gpt_prompt},
-            {"role": "user", "content": content}
-        ]
-    }
+    try:
+        client = OpenAI(api_key=settings.gpt_api_token)
 
-    async with httpx.AsyncClient() as client:
-        response = await client.post(settings.gpt_api_url, json=payload, headers=headers)
-        result = response.json()
-        classification = result["choices"][0]["message"]["content"]
+        response = client.chat.completions.create(
+            model=settings.gpt_model,
+            messages=[
+                { "role": "system", "content": settings.gpt_prompt },
+                { "role": "user", "content": "Email: " + content }
+            ]
+        )
 
-    # Salvando no Mongo
-    email_doc = Email(content=content, category="TODO", response=classification)
-    await db.emails.insert_one(email_doc.dict())
+        response_content = response.choices[0].message.content
 
-    return email_doc
+        try:
+            parsed = json.loads(response_content)
+            return parsed
+        
+        except json.JSONDecodeError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Resposta do modelo não está em formato JSON válido"
+            )
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao processar email: {str(e)}"
+        )

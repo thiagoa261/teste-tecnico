@@ -1,8 +1,7 @@
 import hashlib
 import uuid
 from src.db.redis import redis_client
-
-SESSION_EXPIRE_SECONDS = 3600  # 1 hora
+from src.core.config import settings
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
@@ -14,7 +13,7 @@ def generate_session_token() -> str:
     return hashlib.sha256(str(uuid.uuid4()).encode("utf-8")).hexdigest()
 
 def save_session(token: str, username: str):
-    redis_client.set(token, username, ex=SESSION_EXPIRE_SECONDS)
+    redis_client.set(token, username, ex=settings.session_duration)
 
 def get_session_username(token: str) -> str | None:
     return redis_client.get(token)
