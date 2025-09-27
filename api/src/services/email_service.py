@@ -17,11 +17,10 @@ async def process_email(content: str):
                 { "role": "user", "content": "Email: " + content }
             ]
         )
-
-        response_content = response.choices[0].message.content
+        response = response.choices[0].message.content
 
         try:
-            parsed = json.loads(response_content)
+            parsed = json.loads(response)
             return parsed
         
         except json.JSONDecodeError:
