@@ -5,9 +5,11 @@
 		<Header />
 
 		<UMain class="my-5">
-			<slot />
+			<div class="container mx-auto px-3">
+				<slot />
+			</div>
 		</UMain>
 
-        <Footer />
+		<Footer />
 	</div>
 </template>

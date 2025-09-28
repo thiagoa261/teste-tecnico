@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { ILoginResponse, IMeResponse } from "~/types/auth";
+import type { ILoginResponse, IMeResponse } from "~/types/response";
 
 export const useAuthStore = defineStore("auth", {
 	state: () => ({
@@ -53,6 +53,11 @@ export const useAuthStore = defineStore("auth", {
 				this.token = null;
 				this.user = null;
 			}
+		},
+
+		async getToken() {
+			if (!this.token) return null;
+			return this.token;
 		},
 	},
 

@@ -5,3 +5,9 @@ export interface ILoginResponse {
 export interface IMeResponse {
 	username: string;
 }
+
+export interface IIAResponse {
+	categoria: string;
+	justificativa: string;
+	resposta_sugerida: string;
+}

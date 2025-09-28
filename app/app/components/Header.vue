@@ -13,12 +13,6 @@ const items = computed<NavigationMenuItem[]>(() => [
 		to: "/",
 		active: route.path === "/",
 	},
-	{
-		label: "Emails",
-		icon: "i-lucide-mail",
-		to: "/emails",
-		active: route.path.startsWith("/emails"),
-	},
 ]);
 
 async function logout() {
