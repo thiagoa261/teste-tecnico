@@ -5,7 +5,7 @@ import type { ILoginResponse, IMeResponse } from "~/types/auth";
 export const useAuthStore = defineStore("auth", {
 	state: () => ({
 		token: null as string | null,
-		user: null as null | { username: string },
+		user: null as string | null,
 	}),
 
 	getters: {
@@ -36,7 +36,7 @@ export const useAuthStore = defineStore("auth", {
 
 				if (!response.data.username) throw new Error("Usuário não encontrado!");
 
-				this.user = response.data;
+				this.user = response.data.username;
 				return this.user;
 			} catch {
 				this.logout();

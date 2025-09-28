@@ -1,7 +1,7 @@
 export interface ILoginResponse {
-    session_token: string;
+	session_token: string;
 }
 
 export interface IMeResponse {
-    username: string;
+	username: string;
 }
