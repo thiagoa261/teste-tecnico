@@ -1,10 +1,19 @@
 from fastapi import FastAPI
 from src.controllers import email_controller, auth_controller
 from src.core.config import settings
+from fastapi.middleware.cors import CORSMiddleware
 from src.db.mongo import db
 from src.core import security
 
 api = FastAPI(title="API para classificação de e-mails")
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Rotas
 api.include_router(auth_controller.router, prefix="/auth", tags=["Auth"])
