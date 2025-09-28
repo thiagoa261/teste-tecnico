@@ -23,6 +23,11 @@ async function submitForm() {
 
 	if (selectedTipo.value === eTipoInput.TEXTO) {
 		try {
+			if (!emailBody.value) {
+				toastError("O corpo do email não pode ser vazio.");
+				return;
+			}
+
 			const token = await authStore.getToken();
 			if (!token) {
 				toastError("Usuário não autenticado.");
@@ -41,13 +46,61 @@ async function submitForm() {
 			}
 
 			iaResponse.value = response.data;
-			console.log(response.data);
+			toastSuccess("Email processado com sucesso.");
 		} catch (err) {
 			toastError("Erro ao processar email.");
 		} finally {
 			loading.value = false;
 		}
 	}
+
+	if (selectedTipo.value === eTipoInput.ARQUIVO) {
+		try {
+			if (!file.value) {
+				toastError("Selecione um arquivo.");
+				return;
+			}
+
+			const token = await authStore.getToken();
+			if (!token) {
+				toastError("Usuário não autenticado.");
+				return;
+			}
+
+			const formData = new FormData();
+			formData.append("file", file.value);
+
+			const response = await axios.post(`${config.public.apiUrl}/email/processar/file`, formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+					token,
+				},
+			});
+
+			if (response.status !== 200) {
+				toastError("Erro ao processar email.");
+				return;
+			}
+
+			iaResponse.value = response.data;
+			toastSuccess("Arquivo processado com sucesso.");
+		} catch (err) {
+			toastError("Erro ao processar arquivo.");
+		} finally {
+			loading.value = false;
+		}
+	}
+}
+
+function clear() {
+	emailBody.value = "";
+	file.value = null;
+	iaResponse.value = {
+		categoria: "",
+		justificativa: "",
+		resposta_sugerida: "",
+	};
+	loading.value = false;
 }
 
 definePageMeta({
@@ -116,6 +169,12 @@ definePageMeta({
 					<UTextarea class="w-full" :rows="7" style="resize: none" :disabled="true" v-model="iaResponse.resposta_sugerida" />
 				</UFormField>
 			</div>
+
+			<template #footer>
+				<div class="flex justify-end">
+					<UButton @click="clear" color="error" icon="i-lucide-trash" :disabled="loading">Limpar</UButton>
+				</div>
+			</template>
 		</UCard>
 	</div>
 </template>
