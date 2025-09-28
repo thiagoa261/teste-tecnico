@@ -1,7 +1,13 @@
+<script setup lang="ts"></script>
+
 <template>
 	<div>
-		<main class="p-4">
-			<NuxtPage />
-		</main>
+		<Header />
+
+		<UMain class="my-5">
+			<slot />
+		</UMain>
+
+        <Footer />
 	</div>
 </template>

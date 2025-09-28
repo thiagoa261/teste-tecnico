@@ -35,11 +35,11 @@ type Schema = z.output<typeof schema>;
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
 	try {
 		loading.value = true;
-		await new Promise((resolve) => setTimeout(resolve, 2000));
 
 		const response = await auth.login(payload.data.usuario, payload.data.senha);
 
 		if (!response) throw new Error("Erro ao realizar login. Tente novamente.");
+
 		toastSuccess("Login realizado com sucesso!");
 		router.push("/");
 	} catch (error) {

@@ -1,3 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+console.log("🚀 Página index carregando...");
 
-<template></template>
+definePageMeta({
+    layout: "default",
+});
+
+onMounted(() => {
+    console.log("✅ onMounted executou!");
+});
+</script>
+
+<template>
+    <p>alo</p>
+</template>
