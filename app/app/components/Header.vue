@@ -31,8 +31,7 @@ async function logout() {
 <template>
 	<UHeader mode="slideover">
 		<template #title>
-			<!-- <Logo class="h-6 w-auto" /> -->
-			<p>alo</p>
+			<p>Classificador de Emails</p>
 		</template>
 
 		<UNavigationMenu :items="items" />
