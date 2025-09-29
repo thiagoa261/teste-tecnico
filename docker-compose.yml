@@ -1,0 +1,20 @@
+services:
+  email-api:
+    container_name: email-api
+    image: email-api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+
+  email-app:
+    container_name: email-app
+    image: email-app
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
