@@ -1,0 +1,12 @@
+FROM python:3.13.2-alpine
+
+WORKDIR /api
+
+COPY requirements.txt .env ./
+COPY src ./src
+
+RUN pip install -r requirements.txt
+
+EXPOSE 8000
+
+ENTRYPOINT ["uvicorn", "src.main:api"]
