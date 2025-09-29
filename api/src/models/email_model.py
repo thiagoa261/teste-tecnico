@@ -5,4 +5,5 @@ class Email(BaseModel):
     content: str
     category: str
     response: str
+    justification: str
     created_at: datetime = datetime.utcnow()
