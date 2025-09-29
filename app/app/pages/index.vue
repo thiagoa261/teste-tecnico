@@ -8,6 +8,9 @@ const authStore = useAuthStore();
 const { toastError, toastSuccess } = useAppToast();
 
 const loading = ref(false);
+const loadingSave = ref(false);
+const disableSave = ref(true);
+
 const tiposInput = ref([eTipoInput.TEXTO, eTipoInput.ARQUIVO]);
 const selectedTipo = ref(eTipoInput.TEXTO);
 const file = ref<File | null>(null);
@@ -16,6 +19,7 @@ const iaResponse = ref<IIAResponse>({
 	categoria: "",
 	justificativa: "",
 	resposta_sugerida: "",
+	content: "",
 });
 
 async function submitForm() {
@@ -46,6 +50,7 @@ async function submitForm() {
 			}
 
 			iaResponse.value = response.data;
+			disableSave.value = false;
 			toastSuccess("Email processado com sucesso.");
 		} catch (err) {
 			toastError("Erro ao processar email.");
@@ -83,12 +88,47 @@ async function submitForm() {
 			}
 
 			iaResponse.value = response.data;
+			disableSave.value = false;
 			toastSuccess("Arquivo processado com sucesso.");
 		} catch (err) {
 			toastError("Erro ao processar arquivo.");
 		} finally {
 			loading.value = false;
 		}
+	}
+}
+
+async function save() {
+	loadingSave.value = true;
+	try {
+		const token = await authStore.getToken();
+		if (!token) {
+			toastError("Usuário não autenticado.");
+			return;
+		}
+
+		const response = await axios.post(
+			`${config.public.apiUrl}/email/salvar`,
+			{
+				content: iaResponse.value.content,
+				category: iaResponse.value.categoria,
+				response: iaResponse.value.resposta_sugerida,
+				justification: iaResponse.value.justificativa,
+			},
+			{ headers: { token } },
+		);
+
+		if (response.status !== 200) {
+			toastError("Erro ao salvar resposta.");
+			return;
+		}
+
+		toastSuccess("Resposta salva com sucesso.");
+		disableSave.value = true;
+	} catch (err) {
+		toastError("Erro ao salvar resposta.");
+	} finally {
+		loadingSave.value = false;
 	}
 }
 
@@ -99,8 +139,10 @@ function clear() {
 		categoria: "",
 		justificativa: "",
 		resposta_sugerida: "",
+		content: "",
 	};
 	loading.value = false;
+	disableSave.value = true;
 }
 
 definePageMeta({
@@ -118,7 +160,7 @@ definePageMeta({
 				</div>
 			</template>
 
-			<UFormField label="Selecionar Tipo de Entrada:" class="mb-6">
+			<UFormField label="Selecionar Tipo de Entrada:" class="mb-5">
 				<USelectMenu v-model="selectedTipo" :items="tiposInput" class="w-full" :disabled="loading" />
 				<template #error><div></div></template>
 			</UFormField>
@@ -171,8 +213,9 @@ definePageMeta({
 			</div>
 
 			<template #footer>
-				<div class="flex justify-end">
-					<UButton @click="clear" color="error" icon="i-lucide-trash" :disabled="loading">Limpar</UButton>
+				<div class="flex justify-end gap-3">
+					<UButton @click="clear" color="error" icon="i-lucide-trash" :disabled="loading || loadingSave">Limpar</UButton>
+					<UButton @click="save" :loading="loadingSave" :disabled="disableSave" color="success" icon="i-lucide-save">Salvar</UButton>
 				</div>
 			</template>
 		</UCard>
